@@ -11,7 +11,7 @@ import { Doc } from "../../../convex/_generated/dataModel";
 
 // This component renders the main content of the page when the user is authenticated.
 function ExpensesPageContent({ currentUser }: { currentUser: Doc<"users"> }) {
-  const expenses = useQuery(api.expenses.getExpenses);
+  const expenses = useQuery(api.expenses.getExpenses, { userId: currentUser._id });
   const logout = useMutation(api.users.logout);
   const router = useRouter();
   const convex = useConvex();

@@ -18,16 +18,13 @@ const getUser = async (
 
 
 export const getExpenses = query({
-  handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    const user = await getUser(ctx, identity?.tokenIdentifier ?? null);
-    if (!user) {
-      return [];
-    }
-
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, { userId }) => {
     return await ctx.db
       .query("expenses")
-      .withIndex("by_userId", (q) => q.eq("userId", user._id))
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
       .order("desc")
       .collect();
   },
