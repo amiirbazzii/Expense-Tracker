@@ -8,8 +8,13 @@ const withPWA = withPWAConstructor({
   disable: process.env.NODE_ENV === "development",
 });
 
+import path from "path";
+
 const nextConfig = withPWA({
-  // your next.js config
+  webpack: (config) => {
+    config.resolve.alias["@"] = path.resolve(__dirname, "src");
+    return config;
+  },
 });
 
 export default nextConfig;
