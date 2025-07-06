@@ -14,6 +14,7 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as expenses from "../expenses.js";
+import type * as functions_categories from "../functions/categories.js";
 import type * as functions_createExpense from "../functions/createExpense.js";
 import type * as users from "../users.js";
 
@@ -27,6 +28,7 @@ import type * as users from "../users.js";
  */
 declare const fullApi: ApiFromModules<{
   expenses: typeof expenses;
+  "functions/categories": typeof functions_categories;
   "functions/createExpense": typeof functions_createExpense;
   users: typeof users;
 }>;

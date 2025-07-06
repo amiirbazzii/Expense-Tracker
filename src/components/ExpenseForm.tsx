@@ -2,6 +2,7 @@
 
 import { useMutation } from "convex/react";
 import { motion } from "framer-motion";
+import CategoryTagInput from "./CategoryTagInput";
 import { api } from "../../convex/_generated/api";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
@@ -11,7 +12,7 @@ export default function ExpenseForm({ currentUser }: { currentUser: Doc<"users">
   const createExpense = useMutation(api.functions.createExpense.createExpense);
   const [amount, setAmount] = useState("");
   const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState<string[]>([]);
   const [forField, setForField] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,7 +25,7 @@ export default function ExpenseForm({ currentUser }: { currentUser: Doc<"users">
     if (!amount) newErrors.general = "Amount is required";
     else if (parseFloat(amount) <= 0) newErrors.general = "Amount must be positive";
     else if (!title.trim()) newErrors.general = "Title is required";
-    else if (!category.trim()) newErrors.general = "Category is required";
+    else if (categories.length === 0) newErrors.general = "At least one category is required";
 
     if (Object.keys(newErrors).length) {
       setErrors(newErrors);
@@ -37,14 +38,14 @@ export default function ExpenseForm({ currentUser }: { currentUser: Doc<"users">
       await createExpense({
         amount: parseFloat(amount),
         title,
-        category,
+        categories,
         date: new Date(date).getTime(),
         userId: currentUser._id,
         for: forField || undefined,
       });
       setAmount("");
       setTitle("");
-      setCategory("");
+      setCategories([]);
       setForField("");
       setSuccess(true);
       setTimeout(() => setSuccess(false), 2000);
@@ -96,15 +97,8 @@ export default function ExpenseForm({ currentUser }: { currentUser: Doc<"users">
         />
       </div>
       <div>
-        <label className="block mb-2 text-sm font-medium text-gray-300">Category</label>
-        <motion.input whileFocus={{ scale: 1.03 }} transition={{ type: "spring", stiffness: 300 }}
-          type="text"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-          disabled={isLoading}
-        />
+        <label className="block mb-2 text-sm font-medium text-gray-300">Categories</label>
+        <CategoryTagInput userId={currentUser._id as any} value={categories} onChange={setCategories} />
       </div>
       <div>
         <label className="block mb-2 text-sm font-medium text-gray-300">For (optional)</label>

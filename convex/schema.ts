@@ -12,10 +12,14 @@ export default defineSchema({
   expenses: defineTable({
     amount: v.number(),
     title: v.string(),
-    category: v.string(),
+    categories: v.array(v.string()),
     for: v.optional(v.string()),
     date: v.number(),
     userId: v.id("users"),
     createdAt: v.number(),
   }).index("by_userId", ["userId"]),
+  categories: defineTable({
+    name: v.string(),
+    userId: v.id("users"),
+  }).index("by_userId", ["userId"]).index("by_userId_name", ["userId", "name"]),
 });
