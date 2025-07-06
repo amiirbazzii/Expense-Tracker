@@ -12,7 +12,9 @@ export default defineSchema({
   expenses: defineTable({
     amount: v.number(),
     title: v.string(),
-    categories: v.array(v.string()),
+    categories: v.optional(v.array(v.string())),
+    // legacy single category support
+    category: v.optional(v.string()),
     for: v.optional(v.string()),
     date: v.number(),
     userId: v.id("users"),

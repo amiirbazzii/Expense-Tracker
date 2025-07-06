@@ -92,7 +92,7 @@ function ExpensesPageContent({ currentUser }: { currentUser: Doc<"users"> }) {
           const total = monthlyExpenses.reduce((s,e)=>s+e.amount,0);
           const byCat: Record<string, number> = {};
           monthlyExpenses.forEach(e=>{
-            const cat = (e.categories && e.categories[0]) || "Other";
+            const cat = (e.categories && e.categories[0]) || (e as any).category || "Other";
             byCat[cat] = (byCat[cat] || 0) + e.amount;
           });
           const data = Object.entries(byCat).map(([name,value])=>({name,value}));
