@@ -1,6 +1,7 @@
 "use client";
 
 import { useConvex, useMutation, useQuery } from "convex/react";
+import PageTransition from "@/components/PageTransition";
 import { api } from "../../../convex/_generated/api";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -81,5 +82,9 @@ export default function AddExpensePage() {
     );
   }
 
-  return <AddExpenseContent currentUser={currentUser} />;
+  return (
+    <PageTransition>
+      <AddExpenseContent currentUser={currentUser} />
+    </PageTransition>
+  );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useConvex, useMutation, useQuery } from "convex/react";
+import PageTransition from "@/components/PageTransition";
 import { api } from "../../../convex/_generated/api";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -168,5 +169,9 @@ export default function ExpensesPage() {
   }
 
   // If the user is logged in, render the main page content.
-  return <ExpensesPageContent currentUser={currentUser} />;
+  return (
+    <PageTransition>
+      <ExpensesPageContent currentUser={currentUser} />
+    </PageTransition>
+  );
 }

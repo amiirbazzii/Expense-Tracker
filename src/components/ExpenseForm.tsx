@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation } from "convex/react";
+import { motion } from "framer-motion";
 import { api } from "../../convex/_generated/api";
 import { useState } from "react";
 import { Doc } from "../../convex/_generated/dataModel";
@@ -41,7 +42,7 @@ export default function ExpenseForm({ currentUser }: { currentUser: Doc<"users">
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block mb-2 text-sm font-medium text-gray-300">Amount</label>
-        <input
+        <motion.input whileFocus={{ scale: 1.03 }} transition={{ type: "spring", stiffness: 300 }}
           type="number"
           step="0.01"
           value={amount}
@@ -53,7 +54,7 @@ export default function ExpenseForm({ currentUser }: { currentUser: Doc<"users">
       </div>
       <div>
         <label className="block mb-2 text-sm font-medium text-gray-300">Title</label>
-        <input
+        <motion.input whileFocus={{ scale: 1.03 }} transition={{ type: "spring", stiffness: 300 }}
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -64,7 +65,7 @@ export default function ExpenseForm({ currentUser }: { currentUser: Doc<"users">
       </div>
       <div>
         <label className="block mb-2 text-sm font-medium text-gray-300">Category</label>
-        <input
+        <motion.input whileFocus={{ scale: 1.03 }} transition={{ type: "spring", stiffness: 300 }}
           type="text"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
@@ -75,7 +76,7 @@ export default function ExpenseForm({ currentUser }: { currentUser: Doc<"users">
       </div>
       <div>
         <label className="block mb-2 text-sm font-medium text-gray-300">For (optional)</label>
-        <input
+        <motion.input whileFocus={{ scale: 1.03 }} transition={{ type: "spring", stiffness: 300 }}
           type="text"
           value={forField}
           onChange={(e) => setForField(e.target.value)}
@@ -85,7 +86,7 @@ export default function ExpenseForm({ currentUser }: { currentUser: Doc<"users">
       </div>
       <div>
         <label className="block mb-2 text-sm font-medium text-gray-300">Date</label>
-        <input
+        <motion.input whileFocus={{ scale: 1.03 }} transition={{ type: "spring", stiffness: 300 }}
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
@@ -94,13 +95,13 @@ export default function ExpenseForm({ currentUser }: { currentUser: Doc<"users">
           disabled={isLoading}
         />
       </div>
-      <button
+      <motion.button whileTap={{ scale: 0.95 }}
         type="submit"
         className="w-full py-3 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed"
         disabled={isLoading}
       >
         {isLoading ? "Adding..." : "Add Expense"}
-      </button>
+      </motion.button>
     </form>
   );
 }
