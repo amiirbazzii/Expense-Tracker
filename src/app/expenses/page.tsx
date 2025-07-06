@@ -1,6 +1,6 @@
 "use client";
 
-import { useConvex, useMutation, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
 import PageTransition from "@/components/PageTransition";
 import { api } from "../../../convex/_generated/api";
 import { useRouter } from "next/navigation";
@@ -52,17 +52,11 @@ function ExpensesPageContent({ currentUser }: { currentUser: Doc<"users"> }) {
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth() + 1);
   const monthlyExpenses = useQuery(api.expenses.getMonthlyExpenses, { userId: currentUser._id, year, month });
-  const logout = useMutation(api.users.logout);
-  const router = useRouter();
-  const convex = useConvex();
 
-  const handleLogout = async () => {
-    await logout();
-    localStorage.removeItem("convex_auth_token");
-    await convex.setAuth(async () => null);
-    // Full page reload to ensure all state is cleared
-    window.location.href = "/";
-  };
+  const router = useRouter();
+
+
+
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
@@ -79,12 +73,12 @@ function ExpensesPageContent({ currentUser }: { currentUser: Doc<"users"> }) {
           >
             Add Expense
           </Link>
-          <button
-          onClick={handleLogout}
-          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-        >
-          Logout
-        </button>
+          <Link
+            href="/settings"
+            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            Settings
+          </Link>
         </div>
       </header>
       {/* Chart Section */}

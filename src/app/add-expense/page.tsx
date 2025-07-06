@@ -1,6 +1,6 @@
 "use client";
 
-import { useConvex, useMutation, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
 import PageTransition from "@/components/PageTransition";
 import { api } from "../../../convex/_generated/api";
 import { useRouter } from "next/navigation";
@@ -10,16 +10,7 @@ import Link from "next/link";
 import { Doc } from "../../../convex/_generated/dataModel";
 
 function AddExpenseContent({ currentUser }: { currentUser: Doc<"users"> }) {
-  const logout = useMutation(api.users.logout);
   const router = useRouter();
-  const convex = useConvex();
-
-  const handleLogout = async () => {
-    await logout();
-    localStorage.removeItem("convex_auth_token");
-    await convex.setAuth(async () => null);
-    window.location.href = "/";
-  };
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8 max-w-2xl">
@@ -34,12 +25,12 @@ function AddExpenseContent({ currentUser }: { currentUser: Doc<"users"> }) {
           >
             View Expenses
           </Link>
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          <Link
+            href="/settings"
+            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
           >
-            Logout
-          </button>
+            Settings
+          </Link>
         </div>
       </header>
       <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
