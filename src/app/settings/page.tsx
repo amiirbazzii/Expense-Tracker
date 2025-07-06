@@ -14,6 +14,10 @@ function SettingsContent({ currentUser }: { currentUser: Doc<"users"> }) {
   const convex = useConvex();
 
   const handleLogout = async () => {
+    if (typeof window !== "undefined") {
+      const confirmed = window.confirm("Are you sure you want to log out?");
+      if (!confirmed) return;
+    }
     await logout();
     localStorage.removeItem("convex_auth_token");
     if (convex && typeof convex.setAuth === "function") await convex.setAuth(async () => null);
