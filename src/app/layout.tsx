@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import ConvexClientProvider from "./ConvexClientProvider";
-import OfflineBanner from "../components/OfflineBanner";
-import InstallPWAButton from "../components/InstallPWAButton";
+import dynamic from "next/dynamic";
+const OfflineBanner = dynamic(() => import("../components/OfflineBanner"), { ssr: false });
+const InstallPWAButton = dynamic(() => import("../components/InstallPWAButton"), { ssr: false });
+
 
 const inter = Inter({ subsets: ["latin"] });
 
