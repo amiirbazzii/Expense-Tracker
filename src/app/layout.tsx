@@ -5,6 +5,7 @@ import ConvexClientProvider from "./ConvexClientProvider";
 import dynamic from "next/dynamic";
 const OfflineBanner = dynamic(() => import("../components/OfflineBanner"), { ssr: false });
 const InstallPWAButton = dynamic(() => import("../components/InstallPWAButton"), { ssr: false });
+const OfflineSyncProvider = dynamic(() => import("../components/OfflineSyncProvider"), { ssr: false });
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -24,7 +25,9 @@ export default function RootLayout({
     <html lang="en" className="bg-gray-900">
       <body className={inter.className}>
         <ConvexClientProvider>
-            {children}
+            <OfflineSyncProvider>
+              {children}
+            </OfflineSyncProvider>
             <OfflineBanner />
             <InstallPWAButton />
           </ConvexClientProvider>

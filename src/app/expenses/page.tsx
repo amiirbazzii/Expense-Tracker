@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
+import useCachedExpenses from "@/hooks/useCachedExpenses";
 import PageTransition from "@/components/PageTransition";
 import { api } from "../../../convex/_generated/api";
 import { useRouter } from "next/navigation";
@@ -45,7 +46,7 @@ function MonthPicker({ year, month, onChange }: { year: number; month: number; o
 }
 
 function ExpensesPageContent({ currentUser }: { currentUser: Doc<"users"> }) {
-  const expenses = useQuery(api.expenses.getExpenses, { userId: currentUser._id });
+  const expenses = useCachedExpenses(currentUser._id);
 
   // dashboard data
   const today = new Date();
