@@ -30,3 +30,23 @@ export const getExpenses = query({
   },
 });
 
+// Fetch expenses for a specific user and month
+export const getMonthlyExpenses = query({
+  args: {
+    userId: v.id("users"),
+    year: v.number(), // e.g. 2025
+    month: v.number(), // 1-12
+  },
+  handler: async (ctx, { userId, year, month }) => {
+    const expenses = await ctx.db
+      .query("expenses")
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
+      .collect();
+
+    const start = new Date(year, month - 1, 1).getTime();
+    const end = new Date(year, month, 1).getTime();
+
+    return expenses.filter((e) => e.date >= start && e.date < end);
+  },
+});
+
