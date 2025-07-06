@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import ConvexClientProvider from "./ConvexClientProvider";
+import OfflineBanner from "../components/OfflineBanner";
+import InstallPWAButton from "../components/InstallPWAButton";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +21,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="bg-gray-900">
       <body className={inter.className}>
-        <ConvexClientProvider>{children}</ConvexClientProvider>
+        <ConvexClientProvider>
+            {children}
+            <OfflineBanner />
+            <InstallPWAButton />
+          </ConvexClientProvider>
       </body>
     </html>
   );
