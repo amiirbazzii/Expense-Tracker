@@ -10,6 +10,7 @@ export default function ExpenseForm({ currentUser }: { currentUser: Doc<"users">
   const [amount, setAmount] = useState("");
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
+  const [forField, setForField] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -23,10 +24,12 @@ export default function ExpenseForm({ currentUser }: { currentUser: Doc<"users">
         category,
         date: new Date(date).getTime(),
         userId: currentUser._id,
+        for: forField || undefined,
       });
       setAmount("");
       setTitle("");
       setCategory("");
+      setForField("");
     } catch (error) {
       console.error("Failed to create expense:", error);
     } finally {
@@ -67,6 +70,16 @@ export default function ExpenseForm({ currentUser }: { currentUser: Doc<"users">
           onChange={(e) => setCategory(e.target.value)}
           className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
+          disabled={isLoading}
+        />
+      </div>
+      <div>
+        <label className="block mb-2 text-sm font-medium text-gray-300">For (optional)</label>
+        <input
+          type="text"
+          value={forField}
+          onChange={(e) => setForField(e.target.value)}
+          className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           disabled={isLoading}
         />
       </div>

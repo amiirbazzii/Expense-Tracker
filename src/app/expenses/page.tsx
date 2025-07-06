@@ -12,7 +12,22 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { Doc } from "../../../convex/_generated/dataModel";
 
 // This component renders the main content of the page when the user is authenticated.
-const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#8dd1e1"];
+const COLORS = ["#A3A1FB", "#FFD6A5", "#FFADAD", "#CAFFBF", "#BDB2FF", "#FDFFB6", "#9BF6FF"];
+
+function CustomTooltip({ active, payload }: { active?: boolean; payload?: any[] }) {
+  if (!active || !payload || payload.length === 0) return null;
+    const { name, value } = payload[0];
+  const color = payload[0]?.payload?.fill ?? payload[0].fill ?? payload[0].color ?? "#ffffff";
+  return (
+    <div
+      style={{ backgroundColor: color, color: "#111111" }}
+      className="shadow-lg text-sm font-semibold px-3 py-2 rounded-lg"
+    >
+      {`${name}: $${(value as number).toFixed(2)}`}
+    </div>
+  );
+}
+
 
 function MonthPicker({ year, month, onChange }: { year: number; month: number; onChange: (y: number, m: number) => void }) {
   return (
@@ -83,18 +98,32 @@ function ExpensesPageContent({ currentUser }: { currentUser: Doc<"users"> }) {
           monthlyExpenses.forEach(e=>{byCat[e.category]=(byCat[e.category]||0)+e.amount;});
           const data = Object.entries(byCat).map(([name,value])=>({name,value}));
           return (
-            <div className="w-full h-64 mb-8 bg-gray-800 p-4 rounded-lg">
-              <p className="mb-2 text-lg font-semibold text-white">Total for month: ${total.toFixed(2)}</p>
-              <ResponsiveContainer>
-                <PieChart>
-                  <Pie dataKey="value" data={data} outerRadius={100} label>
-                    {data.map((entry,index)=>(
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+            <div className="relative w-full mb-8 bg-gray-800 p-4 rounded-lg flex flex-col items-center sm:flex-row sm:h-80">
+              <div className="relative w-full h-64 sm:h-full sm:flex-1">
+                <ResponsiveContainer>
+                  <PieChart>
+                    <Pie
+                      dataKey="value"
+                      data={data}
+                      innerRadius={90}
+                      outerRadius={100}
+                      paddingAngle={4}
+                      cornerRadius={10}
+                      labelLine={false}
+                      label={({ name, percent = 0 }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    >
+                      {data.map((entry: {name: string; value: number}, index: number) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip content={<CustomTooltip />} wrapperStyle={{ outline: "none" }} isAnimationActive={false} />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <span className="text-xl font-bold text-white">${total.toFixed(0)}</span>
+                </div>
+              </div>
+
             </div>
           );
         })()
