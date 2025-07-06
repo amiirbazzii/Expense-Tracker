@@ -10,7 +10,12 @@ export default function ExpensesList({ expenses }: ExpensesListProps) {
   }
 
   if (expenses.length === 0) {
-    return <div className="text-center text-gray-400">No expenses found.</div>;
+    return (
+      <div className="text-center text-gray-400 py-8">
+        <p className="text-lg">🙌 You haven’t added any expenses yet.</p>
+        <p className="text-sm mt-2">Tap the <span className="font-semibold">“Add Expense”</span> button to create your first one!</p>
+      </div>
+    );
   }
 
   return (

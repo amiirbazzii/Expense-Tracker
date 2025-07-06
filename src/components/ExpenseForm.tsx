@@ -3,7 +3,8 @@
 import { useMutation } from "convex/react";
 import { motion } from "framer-motion";
 import { api } from "../../convex/_generated/api";
-import { useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, useEffect } from "react";
 import { Doc } from "../../convex/_generated/dataModel";
 
 export default function ExpenseForm({ currentUser }: { currentUser: Doc<"users"> }) {
@@ -14,9 +15,23 @@ export default function ExpenseForm({ currentUser }: { currentUser: Doc<"users">
   const [forField, setForField] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const newErrors: Record<string, string> = {};
+    if (!amount) newErrors.general = "Amount is required";
+    else if (parseFloat(amount) <= 0) newErrors.general = "Amount must be positive";
+    else if (!title.trim()) newErrors.general = "Title is required";
+    else if (!category.trim()) newErrors.general = "Category is required";
+
+    if (Object.keys(newErrors).length) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
     setIsLoading(true);
     try {
       await createExpense({
@@ -31,15 +46,32 @@ export default function ExpenseForm({ currentUser }: { currentUser: Doc<"users">
       setTitle("");
       setCategory("");
       setForField("");
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 2000);
     } catch (error) {
       console.error("Failed to create expense:", error);
+      setErrors({ general: "Failed to add expense. Please try again." });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <>
+    {success && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0 }}
+          className="mb-4 flex items-center gap-2 text-green-400 font-semibold"
+        >
+          <span>✔ Expense added!</span>
+        </motion.div>
+      )}
+      {errors.general && (
+        <p className="mb-4 text-red-400 text-sm">{errors.general}</p>
+      )}
+      <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block mb-2 text-sm font-medium text-gray-300">Amount</label>
         <motion.input whileFocus={{ scale: 1.03 }} transition={{ type: "spring", stiffness: 300 }}
@@ -97,11 +129,12 @@ export default function ExpenseForm({ currentUser }: { currentUser: Doc<"users">
       </div>
       <motion.button whileTap={{ scale: 0.95 }}
         type="submit"
-        className="w-full py-3 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed"
+        className={`w-full py-3 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed ${isLoading ? 'opacity-50' : ''}`}
         disabled={isLoading}
       >
         {isLoading ? "Adding..." : "Add Expense"}
       </motion.button>
     </form>
+  </>
   );
 }
