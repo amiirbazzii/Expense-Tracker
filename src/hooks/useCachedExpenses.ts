@@ -3,16 +3,20 @@ import { useEffect, useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { cacheExpenses, readCachedExpenses, readPendingExpenses } from "@/lib/indexedDb";
+import type { SyncStatus } from "@/lib/indexedDb";
 import { Doc } from "../../convex/_generated/dataModel";
+
+export type ExpenseWithStatus = Doc<"expenses"> & { syncStatus?: SyncStatus; error?: string };
 
 export default function useCachedExpenses(userId: string) {
   const live = useQuery(api.expenses.getExpenses, { userId: userId as any });
-  const [data, setData] = useState<Doc<"expenses">[] | undefined>(live);
+  const [data, setData] = useState<ExpenseWithStatus[] | undefined>(live);
 
   // When online & data arrives, cache it
   useEffect(() => {
     if (live !== undefined) {
-      setData(live);
+      const liveWithStatus = (live ?? []).map((e) => ({ ...e, syncStatus: "synced" as SyncStatus }));
+      setData(liveWithStatus);
       cacheExpenses(live).catch(() => null);
     }
   }, [live]);
@@ -27,8 +31,11 @@ export default function useCachedExpenses(userId: string) {
         ...p.data,
         _id: p.localId as any,
         _creationTime: p.data.tempDate,
-      })) as Doc<"expenses">[];
-      setData([...cached, ...pendingDocs]);
+        syncStatus: p.syncStatus,
+        error: p.error,
+      })) as ExpenseWithStatus[];
+      const cachedWithStatus: ExpenseWithStatus[] = cached.map((c) => ({ ...c, syncStatus: "synced" as SyncStatus }));
+      setData([...cachedWithStatus, ...pendingDocs]);
     }
     loadOffline();
   }, [userId]);
@@ -42,8 +49,11 @@ export default function useCachedExpenses(userId: string) {
         ...p.data,
         _id: p.localId as any,
         _creationTime: p.data.tempDate,
-      })) as Doc<"expenses">[];
-      setData([...cached, ...pendingDocs]);
+        syncStatus: p.syncStatus,
+        error: p.error,
+      })) as ExpenseWithStatus[];
+      const cachedWithStatus: ExpenseWithStatus[] = cached.map((c) => ({ ...c, syncStatus: "synced" as SyncStatus }));
+      setData([...cachedWithStatus, ...pendingDocs]);
     };
     window.addEventListener("expenses-updated", handler);
     return () => window.removeEventListener("expenses-updated", handler);

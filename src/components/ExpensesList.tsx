@@ -1,7 +1,8 @@
-import { Doc } from "../../convex/_generated/dataModel";
+import type { ExpenseWithStatus } from "@/hooks/useCachedExpenses";
+import { updatePendingStatus } from "@/lib/indexedDb";
 
 interface ExpensesListProps {
-  expenses: Doc<"expenses">[] | undefined;
+  expenses: ExpenseWithStatus[] | undefined;
 }
 
 export default function ExpensesList({ expenses }: ExpensesListProps) {
@@ -27,9 +28,22 @@ export default function ExpensesList({ expenses }: ExpensesListProps) {
               <h3 className="text-lg font-semibold text-white">{expense.title}</h3>
               <p className="text-sm text-gray-400">{expense.categories?.join(', ')}</p>
             </div>
-            <div className="text-right">
+            <div className="text-right flex flex-col items-end">
               <p className="text-xl font-bold text-green-400">${expense.amount.toFixed(2)}</p>
               <p className="text-xs text-gray-500">{new Date(expense.date).toLocaleDateString()}</p>
+                {expense.syncStatus === "pending" && <span className="text-yellow-400 text-xs">🕓 Pending</span>}
+                {expense.syncStatus === "synced" && <span className="text-green-400 text-xs">✅ Synced</span>}
+                {expense.syncStatus === "failed" && (
+                  <button
+                    className="text-red-400 text-xs underline"
+                    onClick={async () => {
+                      await updatePendingStatus(expense._id as any, "pending");
+                      window.dispatchEvent(new Event("expenses-updated"));
+                    }}
+                  >
+                    ❌ Retry
+                  </button>
+                )}
             </div>
           </div>
         </li>
