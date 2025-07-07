@@ -4,6 +4,7 @@ import { useMutation } from "convex/react";
 import { motion } from "framer-motion";
 import CategoryTagInput from "./CategoryTagInput";
 import { api } from "../../convex/_generated/api";
+import { addPendingExpense } from "@/lib/indexedDb";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
 import { Doc } from "../../convex/_generated/dataModel";
@@ -25,7 +26,7 @@ export default function ExpenseForm({ currentUser }: { currentUser: Doc<"users">
     if (!amount) newErrors.general = "Amount is required";
     else if (parseFloat(amount) <= 0) newErrors.general = "Amount must be positive";
     else if (!title.trim()) newErrors.general = "Title is required";
-    else if (categories.length === 0) newErrors.general = "At least one category is required";
+    else if (categories.length === 0 && navigator.onLine) newErrors.general = "At least one category is required";
 
     if (Object.keys(newErrors).length) {
       setErrors(newErrors);
@@ -35,7 +36,23 @@ export default function ExpenseForm({ currentUser }: { currentUser: Doc<"users">
     setErrors({});
     setIsLoading(true);
     try {
-      await createExpense({
+      // If offline, enqueue instead of calling Convex
+      if (!navigator.onLine) {
+        await addPendingExpense({
+          localId: crypto.randomUUID(),
+          data: {
+            amount: parseFloat(amount),
+            title,
+            categories,
+            date: new Date(date).getTime(),
+            userId: currentUser._id,
+            for: forField || undefined,
+            tempDate: Date.now(),
+          } as any,
+        });
+        window.dispatchEvent(new Event("expenses-updated"));
+      } else {
+        await createExpense({
         amount: parseFloat(amount),
         title,
         categories,
@@ -43,6 +60,7 @@ export default function ExpenseForm({ currentUser }: { currentUser: Doc<"users">
         userId: currentUser._id,
         for: forField || undefined,
       });
+      }
       setAmount("");
       setTitle("");
       setCategories([]);
@@ -51,7 +69,20 @@ export default function ExpenseForm({ currentUser }: { currentUser: Doc<"users">
       setTimeout(() => setSuccess(false), 2000);
     } catch (error) {
       console.error("Failed to create expense:", error);
-      setErrors({ general: "Failed to add expense. Please try again." });
+      // Fallback: queue locally if network error
+      await addPendingExpense({
+        localId: crypto.randomUUID(),
+        data: {
+          amount: parseFloat(amount),
+          title,
+          categories,
+          date: new Date(date).getTime(),
+          userId: currentUser._id,
+          for: forField || undefined,
+          tempDate: Date.now(),
+        } as any,
+      });
+      window.dispatchEvent(new Event("expenses-updated"));
     } finally {
       setIsLoading(false);
     }
