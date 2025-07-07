@@ -60,10 +60,10 @@ function ExpensesPageContent({ currentUser }: { currentUser: Doc<"users"> }) {
 
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 lg:p-8">
-      <header className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-4">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">Your Expenses</h1>
+    <div className="w-full px-4 py-4">
+      <header className="flex flex-col gap-4 mb-6">
+        <div className="flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-white">Your Expenses</h1>
           <MonthPicker year={year} month={month} onChange={(y,m)=>{setYear(y);setMonth(m);}} />
         </div>
 
@@ -97,8 +97,8 @@ function ExpensesPageContent({ currentUser }: { currentUser: Doc<"users"> }) {
           });
           const data = Object.entries(byCat).map(([name,value])=>({name,value}));
           return (
-            <div className="relative w-full mb-8 bg-gray-800 p-4 rounded-lg flex flex-col items-center sm:flex-row sm:h-80">
-              <div className="relative w-full h-64 sm:h-full sm:flex-1">
+            <div className="relative w-full mb-8 bg-gray-800 p-4 rounded-lg flex flex-col items-center">
+              <div className="relative w-full h-64">
                 <ResponsiveContainer>
                   <PieChart>
                     <Pie

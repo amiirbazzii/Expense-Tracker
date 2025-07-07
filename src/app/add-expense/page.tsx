@@ -13,9 +13,9 @@ function AddExpenseContent({ currentUser }: { currentUser: Doc<"users"> }) {
   const router = useRouter();
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 lg:p-8 max-w-2xl">
-      <header className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white">
+    <div className="w-full px-4 py-4">
+      <header className="flex flex-col gap-4 mb-6">
+        <h1 className="text-2xl font-bold text-white">
           Add New Expense
         </h1>
         <div className="flex gap-2">
