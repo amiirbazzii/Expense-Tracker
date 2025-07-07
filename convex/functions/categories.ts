@@ -19,8 +19,17 @@ export const getUserCategories = query({
 export const createCategory = mutation({
   args: { userId: v.id("users"), name: v.string() },
   returns: v.null(),
-  handler: async (ctx, args) => {
-    await ctx.db.insert("categories", args);
+  handler: async (ctx, { userId, name }) => {
+    const canonical = name.trim().toLowerCase().replace(/\s+/g, "-");
+    // Avoid duplicates for the same user
+    const existing = await ctx.db
+      .query("categories")
+      .withIndex("by_userId_name", (q) => q.eq("userId", userId).eq("name", canonical))
+      .unique();
+
+    if (!existing) {
+      await ctx.db.insert("categories", { userId, name: canonical });
+    }
     return null;
   },
 });

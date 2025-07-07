@@ -28,13 +28,15 @@ export default function CategoryTagInput({ userId, value, onChange }: Props) {
   const createCategory = useMutation(api.functions.categories.createCategory);
 
   // helpers
-  const addCategory = async (cat: string) => {
-    if (cat.trim() === "" || value.includes(cat)) return;
+  const canonicalize = (str: string) => str.trim().toLowerCase().replace(/\s+/g, "-");
+  const addCategory = async (raw: string) => {
+    const cat = canonicalize(raw);
+    if (cat === "" || value.includes(cat)) return;
     onChange([...value, cat]);
     setInput("");
     // ensure exists in DB
     if (
-      !suggestions?.some((c: {name:string}) => c.name.toLowerCase() === cat.toLowerCase()) &&
+      !suggestions?.some((c: { name: string }) => c.name.toLowerCase() === cat) &&
       navigator.onLine
     ) {
       await createCategory({ userId: userId as any, name: cat });
