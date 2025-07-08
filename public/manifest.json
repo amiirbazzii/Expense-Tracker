@@ -1,7 +1,7 @@
 {
-  "name": "Expense Tracker PWA",
-  "short_name": "Expenses",
-  "description": "A simple expense tracker PWA.",
+  "name": "Expense Tracker",
+  "short_name": "Expense Tracker",
+  "description": "Track your expenses with ease",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
